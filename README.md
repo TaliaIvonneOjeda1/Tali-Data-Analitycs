@@ -70,4 +70,4 @@ tests/         # Tests automatizados
 
 ## Licencia / origen de datos
 
-Datos sintéticos de campamento formativo. Uso demostrativo.
+Datos sintéticos de campamento de en inteligencia artificial de mano de Taligent. Uso demostrativo.
