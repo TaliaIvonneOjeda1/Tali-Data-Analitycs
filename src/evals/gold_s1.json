@@ -1,0 +1,78 @@
+{
+  "P01": {
+    "tipo": "puntual",
+    "valor": 9747823869.0,
+    "unidad": "ARS",
+    "medida": "ventas_netas",
+    "filtros": {"anio_fiscal": 2025},
+    "tol": "monto"
+  },
+  "P02": {
+    "tipo": "puntual",
+    "valor": 34186,
+    "unidad": "unidades",
+    "medida": "unidades",
+    "filtros": {"categoria": "Lácteos", "anio": 2026, "mes": 3},
+    "tol": "conteo"
+  },
+  "P03": {
+    "tipo": "puntual",
+    "valor": 35.19638256702099,
+    "unidad": "%",
+    "medida": "margen_pct",
+    "filtros": {"anio_fiscal": 2026, "categoria": "Perfumería"},
+    "tol": "pct"
+  },
+  "P04": {
+    "tipo": "puntual",
+    "valor": 9084031.5,
+    "unidad": "ARS",
+    "medida": "descuentos",
+    "filtros": {"anio": 2025, "mes": 12},
+    "tol": "monto"
+  },
+  "P05": {
+    "tipo": "puntual",
+    "valor": 10,
+    "unidad": "sucursales",
+    "medida": null,
+    "sql": "SELECT count(*) AS n FROM sucursales WHERE region = 'Oeste'",
+    "tol": "conteo"
+  },
+  "P06": {
+    "tipo": "comparativa",
+    "valor": 5.369039480357806,
+    "unidad": "%",
+    "medida": "ventas_netas",
+    "tol": "pct",
+    "componentes": {"actual": 736880516.5, "anterior": 699333049.0}
+  },
+  "P07": {
+    "tipo": "comparativa",
+    "valor": -1.20427894679597,
+    "unidad": "pp",
+    "medida": "margen_pct",
+    "tol": "pct",
+    "componentes": {"actual": 24.462146123057625, "anterior": 25.666425069853595}
+  },
+  "P10": {
+    "tipo": "ranking",
+    "conjunto": [
+      "Almacenes del Sur Los Ceibos",
+      "Almacenes del Sur Costa Sur",
+      "Almacenes del Sur Plaza Mayor",
+      "Almacenes del Sur Villa Arenal",
+      "Almacenes del Sur Barrio Jardín"
+    ],
+    "medida": "ventas_netas",
+    "filtros": {"anio_fiscal": 2026},
+    "tol": "ranking"
+  },
+  "P12": {
+    "tipo": "ranking",
+    "conjunto": ["Shampoo y acondicionador"],
+    "valor": "Shampoo y acondicionador",
+    "medida": "unidades",
+    "tol": "ranking"
+  }
+}

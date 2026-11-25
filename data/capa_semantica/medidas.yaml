@@ -1,0 +1,176 @@
+version: 1
+descripcion: 'Capa semántica de Almacenes del Sur. Cada medida trae su fórmula ya definida: para responder con una medida
+  de esta lista no hace falta rearmar la fórmula en SQL. El criterio de negocio que las fórmulas no dicen está en glosario.md.'
+tablas_hecho:
+  ventas:
+    alias: v
+    grano: fecha x sucursal x producto x tipo de movimiento
+    join: ventas v JOIN fechas f ON v.fecha = f.fecha JOIN productos p ON v.sku = p.sku JOIN sucursales s ON v.sucursal_id
+      = s.sucursal_id JOIN proveedores pr ON p.proveedor_id = pr.proveedor_id
+  stock_semanal:
+    alias: st
+    grano: semana x sucursal x producto
+    join: stock_semanal st JOIN fechas f ON st.semana = f.fecha JOIN productos p ON st.sku = p.sku JOIN sucursales s ON st.sucursal_id
+      = s.sucursal_id JOIN proveedores pr ON p.proveedor_id = pr.proveedor_id
+  presupuesto:
+    alias: pz
+    grano: mes x sucursal x categoría
+    join: presupuesto pz JOIN fechas f ON pz.mes = f.fecha JOIN sucursales s ON pz.sucursal_id = s.sucursal_id
+dimensiones:
+  fecha: f.fecha
+  anio: f.anio
+  mes: f.mes
+  anio_fiscal: f.anio_fiscal
+  trimestre_fiscal: f.trimestre_fiscal
+  mes_fiscal: f.mes_fiscal
+  semana: f.semana_inicio
+  sucursal: s.sucursal_id
+  nombre_sucursal: s.nombre
+  region: s.region
+  formato: s.formato
+  categoria: p.categoria
+  subcategoria: p.subcategoria
+  marca: p.marca
+  producto: p.sku
+  es_marca_propia: p.es_marca_propia
+  proveedor: pr.nombre
+nota_dimensiones: presupuesto solo se puede abrir por fecha (mes o más), sucursal, región, formato y categoría (usar pz.categoria).
+reglas:
+- «Ventas» sin más son ventas netas.
+- El año fiscal empieza el 1 de mayo; AF2026 = mayo de 2025 a abril de 2026. Si un pedido no aclara fiscal o calendario, preguntar
+  o declarar el supuesto.
+- Las variaciones de margen % se informan en puntos porcentuales.
+- 'Comparables (LFL): sucursales con s.fecha_apertura <= primer día del período anterior.'
+- La base no tiene clientes, tickets ni ventas online.
+- El criterio completo está en glosario.md.
+medidas:
+- id: ventas_netas
+  nombre: Ventas netas
+  tabla: ventas
+  formula: SUM(v.importe_neto)
+  unidad: ARS
+  descripcion: Ventas brutas menos descuentos y devoluciones. Es lo que se entiende por «ventas».
+  sinonimos:
+  - ventas
+  - venta
+  - facturación
+  - ingresos
+- id: ventas_brutas
+  nombre: Ventas brutas
+  tabla: ventas
+  formula: SUM(CASE WHEN v.tipo_movimiento = 'venta' THEN v.importe_bruto ELSE 0 END)
+  unidad: ARS
+  descripcion: Ventas a precio de lista antes de descuentos, sin devoluciones.
+  sinonimos:
+  - venta bruta
+- id: descuentos
+  nombre: Descuentos
+  tabla: ventas
+  formula: SUM(v.descuento)
+  unidad: ARS
+  descripcion: Importe resignado por promociones.
+  sinonimos:
+  - descuentos por promociones
+  - inversión en promociones
+- id: devoluciones
+  nombre: Devoluciones
+  tabla: ventas
+  formula: -SUM(CASE WHEN v.tipo_movimiento = 'devolucion' THEN v.importe_neto ELSE 0 END)
+  unidad: ARS
+  descripcion: Importe devuelto, en positivo.
+  sinonimos: []
+- id: unidades
+  nombre: Unidades
+  tabla: ventas
+  formula: SUM(v.unidades)
+  unidad: unidades
+  descripcion: Unidades vendidas, netas de devoluciones.
+  sinonimos:
+  - cantidades
+  - volumen
+- id: costo
+  nombre: Costo
+  tabla: ventas
+  formula: SUM(v.costo)
+  unidad: ARS
+  descripcion: Costo de reposición de lo vendido, vigente el día de la venta.
+  sinonimos:
+  - costo de mercadería
+- id: margen_bruto
+  nombre: Margen bruto
+  tabla: ventas
+  formula: SUM(v.importe_neto) - SUM(v.costo)
+  unidad: ARS
+  descripcion: Ventas netas menos costo.
+  sinonimos:
+  - margen
+  - contribución
+- id: margen_pct
+  nombre: Margen bruto %
+  tabla: ventas
+  formula: (SUM(v.importe_neto) - SUM(v.costo)) / NULLIF(SUM(v.importe_neto), 0) * 100
+  unidad: '%'
+  descripcion: Margen bruto sobre ventas netas. Sus variaciones se informan en puntos porcentuales.
+  sinonimos:
+  - margen porcentual
+  - rentabilidad
+- id: precio_promedio
+  nombre: Precio promedio
+  tabla: ventas
+  formula: SUM(v.importe_neto) / NULLIF(SUM(v.unidades), 0)
+  unidad: ARS por unidad
+  descripcion: 'Ventas netas por unidad. Mezcla productos: puede variar por cambio de mix.'
+  sinonimos:
+  - precio medio
+- id: cantidad_sucursales
+  nombre: Cantidad de sucursales con venta
+  tabla: ventas
+  formula: COUNT(DISTINCT v.sucursal_id)
+  unidad: sucursales
+  descripcion: Sucursales con al menos un movimiento en el período.
+  sinonimos:
+  - sucursales
+- id: presupuesto
+  nombre: Presupuesto
+  tabla: presupuesto
+  formula: SUM(pz.importe_presupuesto)
+  unidad: ARS
+  descripcion: Objetivo mensual de ventas netas.
+  sinonimos:
+  - objetivo
+  - budget
+- id: stock_promedio
+  nombre: Stock promedio
+  tabla: stock_semanal
+  formula: AVG(st.stock_unidades)
+  unidad: unidades
+  descripcion: Promedio de unidades en las fotos semanales.
+  sinonimos:
+  - stock
+- id: tasa_quiebre_pct
+  nombre: Tasa de quiebre %
+  tabla: stock_semanal
+  formula: AVG(CASE WHEN st.stock_unidades = 0 THEN 1.0 ELSE 0.0 END) * 100
+  unidad: '%'
+  descripcion: Porcentaje de combinaciones producto-sucursal con stock cero en la foto del lunes.
+  sinonimos:
+  - quiebre
+  - quiebres de stock
+  - faltantes
+medidas_derivadas:
+- id: desvio_presupuesto_pct
+  nombre: Desvío contra presupuesto %
+  formula: (ventas_netas - presupuesto) / presupuesto * 100
+  nota: Se calcula con ventas_netas y presupuesto sobre el mismo período (meses completos) y las mismas sucursales y categorías.
+- id: variacion_interanual_pct
+  nombre: Variación interanual %
+  formula: (medida período - medida mismo período del año anterior) / medida mismo período del año anterior * 100
+  nota: Sin aclarar, es la total. Para comparables, ver variacion_interanual_lfl_pct y el glosario.
+- id: variacion_interanual_lfl_pct
+  nombre: Variación interanual like-for-like %
+  formula: variacion_interanual_pct calculada solo con las sucursales abiertas desde antes del inicio del período anterior
+  nota: 'Filtro: s.fecha_apertura <= primer día del período anterior.'
+- id: participacion_pct
+  nombre: Participación %
+  formula: medida de la parte / medida del total * 100
+  nota: Informar siempre junto con el total.

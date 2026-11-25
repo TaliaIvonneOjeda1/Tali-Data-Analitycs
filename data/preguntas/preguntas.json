@@ -1,0 +1,82 @@
+[
+  {
+    "id": "P01",
+    "texto": "¿Cuánto vendió la cadena en el año fiscal 2025?"
+  },
+  {
+    "id": "P02",
+    "texto": "¿Cuántas unidades de Lácteos se vendieron en marzo de 2026?"
+  },
+  {
+    "id": "P03",
+    "texto": "¿Qué margen bruto tuvo Perfumería en el AF2026?"
+  },
+  {
+    "id": "P04",
+    "texto": "¿Cuánto se descontó en promociones en diciembre de 2025?"
+  },
+  {
+    "id": "P05",
+    "texto": "¿Cuántas sucursales tiene hoy la región Oeste?"
+  },
+  {
+    "id": "P06",
+    "texto": "¿Cuánto crecieron las ventas de Bebidas en el T3 del AF2026 contra el mismo trimestre del año anterior?"
+  },
+  {
+    "id": "P07",
+    "texto": "¿Cuánto cambió el margen de Almacén en el T2 del AF2026 contra el T2 del AF2025?"
+  },
+  {
+    "id": "P08",
+    "texto": "¿Cuánto crecieron las ventas de la cadena en el AF2026 en términos comparables?"
+  },
+  {
+    "id": "P09",
+    "texto": "¿Cuál fue el desvío contra presupuesto de la cadena en el T4 del AF2026?"
+  },
+  {
+    "id": "P10",
+    "texto": "¿Cuáles fueron las 5 sucursales que más vendieron en el AF2026?"
+  },
+  {
+    "id": "P11",
+    "texto": "¿Qué 3 proveedores dejaron más margen bruto en pesos en el AF2026?"
+  },
+  {
+    "id": "P12",
+    "texto": "¿Qué subcategoría de Perfumería creció más en unidades en el AF2026?"
+  },
+  {
+    "id": "P13",
+    "texto": "¿Por qué bajó el margen de Almacén en el T2 del AF2026?"
+  },
+  {
+    "id": "P14",
+    "texto": "¿Por qué cayeron las ventas de Lácteos en la región Norte en septiembre de 2025?"
+  },
+  {
+    "id": "P15",
+    "texto": "Las ventas de la región Oeste crecieron en el AF2026. ¿Quiere decir que las sucursales de la región vienen mejor?"
+  },
+  {
+    "id": "P16",
+    "texto": "¿Qué pasó con la gaseosa cola de marca propia en diciembre de 2025?"
+  },
+  {
+    "id": "P17",
+    "texto": "¿Cuánto vendimos en el último trimestre?"
+  },
+  {
+    "id": "P18",
+    "texto": "¿Cuánto vendió Limpieza en 2025?"
+  },
+  {
+    "id": "P19",
+    "texto": "¿Cuál es el ticket promedio de la cadena?"
+  },
+  {
+    "id": "P20",
+    "texto": "¿Cuántos clientes nuevos tuvimos en marzo de 2026?"
+  }
+]

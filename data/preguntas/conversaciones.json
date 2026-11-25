@@ -1,0 +1,42 @@
+[
+  {
+    "id": "C1",
+    "turnos": [
+      "¿Cómo vinieron las ventas de Bebidas en el T3 del AF2026 contra el año anterior?",
+      "¿Y en la región Sur?",
+      "¿Qué subcategoría explica la mayor parte de ese crecimiento?"
+    ]
+  },
+  {
+    "id": "C2",
+    "turnos": [
+      "¿Qué margen tuvo Almacén en el T2 del AF2026?",
+      "¿Y en el mismo trimestre del año anterior?",
+      "¿Qué proveedor explica la diferencia?"
+    ]
+  },
+  {
+    "id": "C3",
+    "turnos": [
+      "¿Cuánto vendió la región Oeste en el AF2026?",
+      "¿Cuánto es eso contra el año anterior?",
+      "¿Y si miro solo las sucursales comparables?"
+    ]
+  },
+  {
+    "id": "C4",
+    "turnos": [
+      "¿Cuántas unidades vendió la gaseosa cola Del Sur de 2,25 L en diciembre de 2025?",
+      "¿Y la de Cola Andina?",
+      "¿Hubo alguna promoción de gaseosas ese mes?"
+    ]
+  },
+  {
+    "id": "C5",
+    "turnos": [
+      "¿Cuánto vendimos el último trimestre?",
+      "El fiscal.",
+      "¿Y con qué margen?"
+    ]
+  }
+]

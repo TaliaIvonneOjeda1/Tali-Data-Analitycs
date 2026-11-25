@@ -1,0 +1,58 @@
+# Secretos y entorno local
+.env
+.env.local
+*.pem
+*.key
+credentials*.json
+secrets*.json
+
+# Documentación interna (no producto)
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# DuckDB / runtime
+*.duckdb.wal
+*.duckdb.lock
+# Copia local si el .duckdb oficial está bloqueado por DBeaver
+data/base/*.ro.duckdb
+
+# Salidas generadas (conservar .gitkeep)
+outputs/**
+!outputs/.gitkeep
+
+# Archify: solo artefactos finales (HTML + source). Sin recibos ni paths locales.
+.archify/**/review-*/
+.archify/**/*.delivery*.json
+.archify/**/*.finalize*.json
+.archify/**/*.browser-check.json
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Notebooks checkpoints
+.ipynb_checkpoints/
+
+# Front
+web/node_modules/
+web/dist/
+web/.env
+web/.env.local
+web/*.tsbuildinfo
+*.tsbuildinfo

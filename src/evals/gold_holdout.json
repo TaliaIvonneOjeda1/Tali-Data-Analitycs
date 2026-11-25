@@ -1,0 +1,36 @@
+{
+  "P09": {
+    "tipo": "comparativa",
+    "tol": "pct",
+    "valor": -5.2145577130602225,
+    "unidad": "%",
+    "medida": "desvio_presupuesto_pct",
+    "criterio": "Desvío % cadena T4 AF2026 = (ventas_netas - presupuesto) / presupuesto * 100"
+  },
+  "P11": {
+    "tipo": "ranking",
+    "tol": "ranking",
+    "conjunto": [
+      "Química Hogar S.A.",
+      "Frigorífico Las Lomas S.A.",
+      "Bodegas Valle Alto S.A."
+    ],
+    "medida": "margen_bruto",
+    "criterio": "Top 3 proveedores por margen_bruto ARS en AF2026"
+  },
+  "P14": {
+    "tipo": "diagnostico",
+    "tol": "cualitativo",
+    "criterio": "Debe traer texto + al menos 1 consulta; no inventar clientes/tickets; cruzar dimensiones Lácteos/Norte/sep-2025"
+  },
+  "P18": {
+    "tipo": "ambigua",
+    "tol": "comportamiento",
+    "criterio": "Preguntar o declarar supuesto fiscal vs calendario 2025; no elegir en silencio un número único sin supuestos"
+  },
+  "P20": {
+    "tipo": "sin_dato",
+    "tol": "comportamiento",
+    "criterio": "valor=null y texto explícito de que no hay clientes en la base; no sustituir indicador"
+  }
+}
