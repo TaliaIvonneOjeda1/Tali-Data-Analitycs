@@ -33,11 +33,27 @@ data/base/*.ro.duckdb
 outputs/**
 !outputs/.gitkeep
 
-# Archify: solo artefactos finales (HTML + source). Sin recibos ni paths locales.
+# Archify: solo el HTML de arquitectura del producto
+.archify/**/candidate.json
 .archify/**/review-*/
 .archify/**/*.delivery*.json
 .archify/**/*.finalize*.json
 .archify/**/*.browser-check.json
+
+# Skill vendor Archify (no es el producto); local ok, no publicar
+.agents/skills/archify/
+skills-lock.json
+
+# Scripts de campamento / ensayo (no demo de producto)
+scripts/_probe_db.py
+scripts/demo_cache.py
+scripts/demo_day.py
+scripts/demo_hooks.py
+scripts/demo_s2.py
+scripts/demo_s3.py
+scripts/run_all.py
+scripts/run_evals.py
+scripts/run_holdout.py
 
 # IDE / OS
 .idea/

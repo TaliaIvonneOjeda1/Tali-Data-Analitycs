@@ -56,10 +56,10 @@ Tests sin gastar tokens: `pytest tests -q`
 src/           # API, agente, tools/MCP, semántica, reporting, seguridad
 web/           # Frontend React
 data/          # DuckDB + medidas + glosario + preguntas demo
-scripts/       # serve_api, ask, chat, informe, evals
+scripts/       # serve_api, ask, chat, informe, diagnostico
 tests/         # Tests automatizados
-.agents/       # Skills de producto (informe BI, archify)
-.archify/      # Diagrama de arquitectura
+.agents/       # Skill de informes BI
+.archify/      # Diagrama de arquitectura (HTML)
 ```
 
 ## Seguridad (breve)
