@@ -49,7 +49,14 @@ export type PublicRespuesta = {
   meta?: {
     tiempo_s?: number;
     costo_usd?: number;
-    usage?: { input_tokens?: number; output_tokens?: number };
+    usage?: {
+      input_tokens?: number;
+      output_tokens?: number;
+      cache_read_input_tokens?: number;
+      cache_creation_input_tokens?: number;
+    };
+    scope_blocked?: boolean;
+    multi_question?: boolean;
   };
   session_id?: string;
   turno_index?: number;
@@ -73,6 +80,71 @@ export type SessionSummary = {
   estado?: Record<string, unknown>;
   turnos: SessionTurn[];
   turnos_con_evidencia: number;
+  usage_total?: {
+    input_tokens?: number;
+    output_tokens?: number;
+    cache_read_input_tokens?: number;
+    cache_creation_input_tokens?: number;
+  };
+  costo_usd?: number;
+  costo?: {
+    input_usd?: number;
+    output_usd?: number;
+    total_usd?: number;
+  };
+};
+
+export type UsageTokens = {
+  input_tokens?: number;
+  output_tokens?: number;
+  cache_read_input_tokens?: number;
+  cache_creation_input_tokens?: number;
+};
+
+export type UsageEvent = {
+  id: string;
+  ts: number;
+  kind: string;
+  label: string;
+  session_id?: string | null;
+  usage: UsageTokens;
+  costo: { total_usd?: number; input_usd?: number; output_usd?: number };
+  tiempo_s?: number | null;
+};
+
+export type UsageSummary = {
+  started_at: number;
+  now: number;
+  app: {
+    consultas: number;
+    usage: UsageTokens;
+    costo: {
+      input_usd?: number;
+      output_usd?: number;
+      cache_read_usd?: number;
+      cache_write_usd?: number;
+      total_usd?: number;
+    };
+    ahorro_cache_usd?: number;
+    nota_cache?: string;
+    rates?: Record<string, number>;
+  };
+  sesion_actual?: {
+    session_id: string;
+    consultas: number;
+    usage: UsageTokens;
+    total_usd?: number;
+    ahorro_cache_usd?: number;
+    eventos?: UsageEvent[];
+  } | null;
+  sesiones: Array<{
+    session_id: string;
+    consultas: number;
+    usage: UsageTokens;
+    total_usd?: number;
+    ultimo_ts?: number;
+  }>;
+  eventos_recientes: UsageEvent[];
 };
 
 export type JobStatus = {
@@ -173,4 +245,9 @@ export function getPresets() {
 
 export function getReady() {
   return api<ReadyStatus>("/ready");
+}
+
+export function getUsage(sessionId?: string | null) {
+  const qs = sessionId ? `?session_id=${encodeURIComponent(sessionId)}` : "";
+  return api<UsageSummary>(`/usage${qs}`);
 }

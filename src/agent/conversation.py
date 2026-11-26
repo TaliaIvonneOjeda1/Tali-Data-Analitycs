@@ -15,6 +15,13 @@ import anthropic
 from src.agent.loop import run_agent
 from src.agent.prompts import system_prompt_for
 from src.config import MODEL
+from src.costing import estimate_cost_usd
+from src.security.multi_question import (
+    is_multi_question_message,
+    multi_question_payload,
+)
+from src.security.scope import is_out_of_scope, refusal_payload
+from src.usage_ledger import record_usage
 
 
 def _infer_state_from_respuesta(respuesta: dict[str, Any]) -> dict[str, Any]:
@@ -79,6 +86,50 @@ class ConversationSession:
         verbose: bool = True,
         client: anthropic.Anthropic | None = None,
     ) -> dict[str, Any]:
+        if is_out_of_scope(texto_usuario):
+            respuesta = refusal_payload(texto_usuario)
+            meta = dict(respuesta.get("_meta") or {})
+            record_usage(
+                kind="chat_blocked",
+                label=texto_usuario,
+                usage=meta.get("usage"),
+                session_id=self.conversation_id,
+                tiempo_s=0.0,
+            )
+            record = {
+                "usuario": texto_usuario,
+                "respuesta": {
+                    k: v for k, v in respuesta.items() if not k.startswith("_")
+                },
+                "meta": meta,
+                "estado_despues": dict(self.estado),
+            }
+            self.turnos.append(record)
+            return record
+
+        if is_multi_question_message(texto_usuario):
+            respuesta = multi_question_payload(texto_usuario)
+            meta = dict(respuesta.get("_meta") or {})
+            record_usage(
+                kind="chat_clarify",
+                label=texto_usuario,
+                usage=meta.get("usage"),
+                session_id=self.conversation_id,
+                tiempo_s=0.0,
+            )
+            # Etiqueta corta en sesión: no guardar el catálogo entero como "pregunta".
+            label = "Varias preguntas (pedir una)"
+            record = {
+                "usuario": label,
+                "respuesta": {
+                    k: v for k, v in respuesta.items() if not k.startswith("_")
+                },
+                "meta": meta,
+                "estado_despues": dict(self.estado),
+            }
+            self.turnos.append(record)
+            return record
+
         pregunta = self._wrap_turn(texto_usuario)
         # run_agent es single-shot; para herencia fuerte además del prompt,
         # concatenamos resumen de turnos previos en el mensaje.
@@ -111,6 +162,13 @@ class ConversationSession:
         usage = meta.get("usage") or {}
         for k in self.usage_total:
             self.usage_total[k] += int(usage.get(k) or 0)
+        record_usage(
+            kind="chat",
+            label=texto_usuario,
+            usage=usage,
+            session_id=self.conversation_id,
+            tiempo_s=meta.get("tiempo_s"),
+        )
 
         nuevo_estado = _infer_state_from_respuesta(respuesta)
         # merge: lo nuevo pisa; lo no tocado se conserva
@@ -172,11 +230,21 @@ class ConversationSession:
                     ),
                 }
             )
+        costo = estimate_cost_usd(self.usage_total)
         return {
             "session_id": self.conversation_id,
             "estado": dict(self.estado),
             "turnos": turnos_pub,
             "turnos_con_evidencia": sum(1 for t in turnos_pub if t["tiene_evidencia"]),
+            "usage_total": dict(self.usage_total),
+            "costo_usd": costo.get("total_usd"),
+            "costo": {
+                "input_usd": costo.get("input_usd"),
+                "output_usd": costo.get("output_usd"),
+                "cache_read_usd": costo.get("cache_read_usd"),
+                "cache_write_usd": costo.get("cache_write_usd"),
+                "total_usd": costo.get("total_usd"),
+            },
         }
 
     def evidencia_para_informe(

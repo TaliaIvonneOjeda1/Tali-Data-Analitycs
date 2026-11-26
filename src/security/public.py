@@ -51,10 +51,13 @@ def to_public_respuesta(data: dict[str, Any]) -> dict[str, Any]:
             "input_tokens": usage.get("input_tokens"),
             "output_tokens": usage.get("output_tokens"),
             "cache_read_input_tokens": usage.get("cache_read_input_tokens"),
+            "cache_creation_input_tokens": usage.get("cache_creation_input_tokens"),
         },
         "budget": meta_in.get("budget"),
         "hooks_enabled": meta_in.get("hooks_enabled"),
         "structured_output_ok": meta_in.get("structured_output_ok"),
+        "scope_blocked": meta_in.get("scope_blocked"),
+        "multi_question": meta_in.get("multi_question"),
     }
     return {
         "pregunta": data.get("pregunta"),

@@ -43,6 +43,16 @@ from src.config import (
 from src.logging_util import setup_logging
 from src.multiagent.orchestrator import run_informe, save_result
 from src.security.public import to_public_informe, to_public_respuesta
+from src.security.multi_question import (
+    is_multi_question_message,
+    multi_question_payload,
+)
+from src.security.scope import is_out_of_scope, refusal_payload
+from src.usage_ledger import (
+    backfill_session,
+    record_usage,
+    summary as usage_summary,
+)
 
 setup_logging()
 
@@ -92,6 +102,26 @@ def ready() -> dict[str, Any]:
 
 @app.post("/ask", dependencies=[Depends(rate_limit)])
 def ask(body: AskRequest) -> dict[str, Any]:
+    if is_out_of_scope(body.pregunta):
+        blocked = refusal_payload(body.pregunta)
+        record_usage(
+            kind="ask_blocked",
+            label=body.pregunta,
+            usage=(blocked.get("_meta") or {}).get("usage"),
+            tiempo_s=0.0,
+        )
+        return to_public_respuesta(blocked)
+
+    if is_multi_question_message(body.pregunta):
+        clarified = multi_question_payload(body.pregunta)
+        record_usage(
+            kind="ask_clarify",
+            label=body.pregunta,
+            usage=(clarified.get("_meta") or {}).get("usage"),
+            tiempo_s=0.0,
+        )
+        return to_public_respuesta(clarified)
+
     budget = Budget()
     result = run_agent(
         body.pregunta,
@@ -99,6 +129,13 @@ def ask(body: AskRequest) -> dict[str, Any]:
         enable_budget=True,
         budget=budget,
         enrich=True,
+    )
+    meta = result.get("_meta") or {}
+    record_usage(
+        kind="ask",
+        label=body.pregunta,
+        usage=meta.get("usage"),
+        tiempo_s=meta.get("tiempo_s"),
     )
     return to_public_respuesta(result)
 
@@ -136,6 +173,20 @@ def get_session(session_id: str) -> dict[str, Any]:
     summary = session.resumen_publico()
     summary["session_id"] = session_id
     return summary
+
+
+@app.get("/usage", dependencies=[Depends(require_token)])
+def get_usage(session_id: str | None = None) -> dict[str, Any]:
+    """Consumo acumulado de tokens/USD (app + sesión opcional)."""
+    # Recupera consumos de sesiones vivas si el ledger se perdió por reload.
+    for sid, session in list(_sessions.items()):
+        backfill_session(
+            session_id=sid,
+            usage=session.usage_total,
+            label=f"Sesión {sid} ({len(session.turnos)} turnos)",
+            turnos=len(session.turnos),
+        )
+    return usage_summary(session_id=session_id)
 
 
 @app.post("/informe", response_model=JobCreateResponse, dependencies=[Depends(rate_limit)])
@@ -201,6 +252,15 @@ def informe_async(body: InformeRequest) -> JobCreateResponse:
                     result["pdf"] = dest.name
                     result["job_id"] = job_id
             save_result(result, job_dir / "informe.json")
+            costo = result.get("costo") or {}
+            record_usage(
+                kind="informe",
+                label=pedido or iid,
+                usage=costo.get("usage"),
+                session_id=body.session_id,
+                tiempo_s=result.get("tiempo_s") or costo.get("tiempo_s"),
+                extra={"informe_id": iid, "job_id": job_id},
+            )
             set_result(job_id, to_public_informe(result))
         except Exception as exc:  # noqa: BLE001
             set_error(job_id, str(exc))

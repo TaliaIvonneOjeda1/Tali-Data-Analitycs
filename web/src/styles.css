@@ -363,6 +363,37 @@ textarea {
   color: #9fb0cc !important;
 }
 
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  flex: 0 0 auto;
+}
+
+.nav-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.48rem 0.78rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #dbe6f7;
+  font-size: 0.78rem;
+  font-weight: 650;
+  cursor: pointer;
+  font: inherit;
+}
+
+.nav-chip:hover,
+.nav-chip.active {
+  border-color: rgba(125, 211, 252, 0.45);
+  background: rgba(56, 189, 248, 0.12);
+  color: #e0f2fe;
+}
+
 .trust-badge {
   display: inline-flex;
   align-items: center;
@@ -375,6 +406,99 @@ textarea {
   color: #dbe6f7;
   font-size: 0.78rem;
   font-weight: 650;
+}
+
+.usage-panel {
+  margin-top: 0.75rem;
+}
+
+.usage-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.usage-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.usage-card {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f8fbff, #fff);
+  padding: 1rem 1.05rem;
+}
+
+.usage-label {
+  margin: 0 0 0.35rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.usage-kpi {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-display);
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.usage-card ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.usage-card li + li {
+  margin-top: 0.28rem;
+}
+
+.usage-tables {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 1rem;
+}
+
+.usage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.usage-table th,
+.usage-table td {
+  padding: 0.55rem 0.45rem;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.usage-table th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.usage-table tr.is-current td {
+  background: var(--foam);
+}
+
+@media (max-width: 960px) {
+  .usage-grid,
+  .usage-tables {
+    grid-template-columns: 1fr;
+  }
 }
 
 .trust-badge::before,

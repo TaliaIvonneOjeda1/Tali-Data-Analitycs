@@ -5,13 +5,190 @@ import {
   getJob,
   getPresets,
   getReady,
+  getUsage,
   startInforme,
   type JobStatus,
   type PublicRespuesta,
   type ReadyStatus,
+  type UsageSummary,
 } from "./api";
 
 type Mode = "consulta" | "informe";
+type Screen = "analisis" | "consumos";
+
+function formatUsd(value?: number | null) {
+  if (value == null || !Number.isFinite(value)) return "—";
+  return `USD ${value.toFixed(6)}`;
+}
+
+function formatTokens(value?: number | null) {
+  if (value == null || !Number.isFinite(value)) return "0";
+  return new Intl.NumberFormat("es-AR").format(value);
+}
+
+/** Mismas tarifas default que `src/costing.py` (USD por millón de tokens). */
+const DEFAULT_RATES = {
+  input_usd_per_mtok: 1.0,
+  output_usd_per_mtok: 5.0,
+  cache_read_usd_per_mtok: 0.1,
+  cache_write_usd_per_mtok: 1.25,
+};
+
+function estimateCostFromUsage(
+  usage?: UsageSummary["app"]["usage"] | null,
+  rates: Record<string, number> = DEFAULT_RATES,
+) {
+  const inp = usage?.input_tokens || 0;
+  const out = usage?.output_tokens || 0;
+  const cacheR = usage?.cache_read_input_tokens || 0;
+  const cacheW = usage?.cache_creation_input_tokens || 0;
+  const inputUsd = (inp / 1_000_000) * (rates.input_usd_per_mtok ?? DEFAULT_RATES.input_usd_per_mtok);
+  const outputUsd = (out / 1_000_000) * (rates.output_usd_per_mtok ?? DEFAULT_RATES.output_usd_per_mtok);
+  const cacheReadUsd =
+    (cacheR / 1_000_000) * (rates.cache_read_usd_per_mtok ?? DEFAULT_RATES.cache_read_usd_per_mtok);
+  const cacheWriteUsd =
+    (cacheW / 1_000_000) * (rates.cache_write_usd_per_mtok ?? DEFAULT_RATES.cache_write_usd_per_mtok);
+  const totalUsd = inputUsd + outputUsd + cacheReadUsd + cacheWriteUsd;
+  const fullInputIfNoCache =
+    (cacheR / 1_000_000) * (rates.input_usd_per_mtok ?? DEFAULT_RATES.input_usd_per_mtok);
+  return {
+    input_usd: Number(inputUsd.toFixed(6)),
+    output_usd: Number(outputUsd.toFixed(6)),
+    cache_read_usd: Number(cacheReadUsd.toFixed(6)),
+    cache_write_usd: Number(cacheWriteUsd.toFixed(6)),
+    total_usd: Number(totalUsd.toFixed(6)),
+    ahorro_cache_usd: Number(Math.max(fullInputIfNoCache - cacheReadUsd, 0).toFixed(6)),
+  };
+}
+
+function emptyUsageSummary(): UsageSummary {
+  return {
+    started_at: Date.now() / 1000,
+    now: Date.now() / 1000,
+    app: {
+      consultas: 0,
+      usage: {
+        input_tokens: 0,
+        output_tokens: 0,
+        cache_read_input_tokens: 0,
+        cache_creation_input_tokens: 0,
+      },
+      costo: {
+        input_usd: 0,
+        output_usd: 0,
+        cache_read_usd: 0,
+        cache_write_usd: 0,
+        total_usd: 0,
+      },
+      rates: { ...DEFAULT_RATES },
+    },
+    sesion_actual: null,
+    sesiones: [],
+    eventos_recientes: [],
+  };
+}
+
+function addTok(
+  base: UsageSummary["app"]["usage"],
+  part?: UsageSummary["app"]["usage"] | null,
+) {
+  return {
+    input_tokens: (base.input_tokens || 0) + (part?.input_tokens || 0),
+    output_tokens: (base.output_tokens || 0) + (part?.output_tokens || 0),
+    cache_read_input_tokens:
+      (base.cache_read_input_tokens || 0) + (part?.cache_read_input_tokens || 0),
+    cache_creation_input_tokens:
+      (base.cache_creation_input_tokens || 0) + (part?.cache_creation_input_tokens || 0),
+  };
+}
+
+/** Acumula en el cliente el costo de una respuesta (por si /usage aún no refleja). */
+function absorbLocalEvent(
+  prev: UsageSummary | null,
+  opts: {
+    kind: string;
+    label: string;
+    sessionId?: string | null;
+    usage?: UsageSummary["app"]["usage"] | null;
+    totalUsd?: number | null;
+    tiempoS?: number | null;
+  },
+): UsageSummary {
+  const next = prev ? structuredClone(prev) : emptyUsageSummary();
+  const usage = {
+    input_tokens: opts.usage?.input_tokens || 0,
+    output_tokens: opts.usage?.output_tokens || 0,
+    cache_read_input_tokens: opts.usage?.cache_read_input_tokens || 0,
+    cache_creation_input_tokens: opts.usage?.cache_creation_input_tokens || 0,
+  };
+  if (!next.app.rates) next.app.rates = { ...DEFAULT_RATES };
+  const partCost = estimateCostFromUsage(usage, next.app.rates);
+  // Preferimos el total del backend si vino; el desglose siempre sale de tokens × tarifas.
+  const totalUsd = Number(opts.totalUsd != null ? opts.totalUsd : partCost.total_usd);
+  const event = {
+    id: `local-${Date.now().toString(36)}`,
+    ts: Date.now() / 1000,
+    kind: opts.kind,
+    label: opts.label,
+    session_id: opts.sessionId || null,
+    usage,
+    costo: {
+      total_usd: totalUsd,
+      input_usd: partCost.input_usd,
+      output_usd: partCost.output_usd,
+    },
+    tiempo_s: opts.tiempoS ?? null,
+  };
+  next.app.consultas += 1;
+  next.app.usage = addTok(next.app.usage, usage);
+  const appCost = estimateCostFromUsage(next.app.usage, next.app.rates);
+  next.app.costo = {
+    input_usd: appCost.input_usd,
+    output_usd: appCost.output_usd,
+    cache_read_usd: appCost.cache_read_usd,
+    cache_write_usd: appCost.cache_write_usd,
+    // Si el backend mandó totales distintos, conservamos la suma de totales reportados.
+    total_usd: Number(((next.app.costo.total_usd || 0) + totalUsd).toFixed(6)),
+  };
+  next.app.ahorro_cache_usd = appCost.ahorro_cache_usd;
+  next.eventos_recientes = [event, ...(next.eventos_recientes || [])].slice(0, 40);
+  if (opts.sessionId) {
+    const sess = next.sesiones.find((s) => s.session_id === opts.sessionId);
+    if (sess) {
+      sess.consultas += 1;
+      sess.usage = addTok(sess.usage, usage);
+      sess.total_usd = Number(sess.total_usd || 0) + totalUsd;
+      sess.ultimo_ts = event.ts;
+    } else {
+      next.sesiones = [
+        {
+          session_id: opts.sessionId,
+          consultas: 1,
+          usage,
+          total_usd: totalUsd,
+          ultimo_ts: event.ts,
+        },
+        ...next.sesiones,
+      ];
+    }
+    next.sesion_actual = {
+      session_id: opts.sessionId,
+      consultas: (next.sesion_actual?.session_id === opts.sessionId
+        ? (next.sesion_actual.consultas || 0) + 1
+        : 1),
+      usage:
+        next.sesion_actual?.session_id === opts.sessionId
+          ? addTok(next.sesion_actual.usage, usage)
+          : usage,
+      total_usd:
+        (next.sesion_actual?.session_id === opts.sessionId
+          ? Number(next.sesion_actual.total_usd || 0)
+          : 0) + totalUsd,
+    };
+  }
+  next.now = Date.now() / 1000;
+  return next;
+}
 
 type LocalTurn = {
   index: number;
@@ -107,26 +284,229 @@ function LoadingState({ message }: { message: string }) {
   );
 }
 
+function ConsumosView({
+  usage,
+  sessionId,
+  onRefresh,
+  loading,
+}: {
+  usage: UsageSummary | null;
+  sessionId: string | null;
+  onRefresh: () => void;
+  loading: boolean;
+}) {
+  const app = usage?.app;
+  const sesion = usage?.sesion_actual;
+  const rates = { ...DEFAULT_RATES, ...(app?.rates || {}) };
+  const appCost = estimateCostFromUsage(app?.usage, rates);
+  const sessionCost = estimateCostFromUsage(sesion?.usage, rates);
+  const appTotal =
+    app?.costo?.total_usd != null && app.costo.total_usd > 0
+      ? app.costo.total_usd
+      : appCost.total_usd;
+  const sessionTotal =
+    sesion?.total_usd != null && sesion.total_usd > 0
+      ? sesion.total_usd
+      : sessionCost.total_usd;
+
+  return (
+    <section className="panel usage-panel" aria-labelledby="usage-title">
+      <div className="usage-head">
+        <div>
+          <p className="panel-kicker">Seguimiento de consumo</p>
+          <h2 id="usage-title">Consumos de sesión y corridas</h2>
+          <p className="composer-hint">
+            Acá ves lo que consumió esta sesión y las corridas del momento, más la evidencia de la suite integral.
+          </p>
+        </div>
+        <button type="button" className="secondary-action" disabled={loading} onClick={onRefresh}>
+          {loading ? "Actualizando…" : "Actualizar"}
+        </button>
+      </div>
+
+      <div className="usage-grid">
+        <article className="usage-card">
+          <p className="usage-label">Corrida integral (evidencia)</p>
+          <p className="usage-kpi">USD 2,33</p>
+          <ul>
+            <li>20 / 20 preguntas</li>
+            <li>5 / 5 conversaciones</li>
+            <li>3 / 3 informes</li>
+            <li>415 s de corrida total</li>
+            <li>Holdout 5 / 5 respuestas</li>
+          </ul>
+        </article>
+
+        <article className="usage-card">
+          <p className="usage-label">App en este momento</p>
+          <p className="usage-kpi">{formatUsd(appTotal)}</p>
+          <ul>
+            <li>{app?.consultas ?? 0} consultas / informes</li>
+            <li>
+              Input {formatTokens(app?.usage?.input_tokens)} tok · {formatUsd(appCost.input_usd)}
+            </li>
+            <li>
+              Output {formatTokens(app?.usage?.output_tokens)} tok · {formatUsd(appCost.output_usd)}
+            </li>
+            <li>
+              Cache read {formatTokens(app?.usage?.cache_read_input_tokens)} tok ·{" "}
+              {formatUsd(appCost.cache_read_usd)}
+            </li>
+            <li>
+              Cache write {formatTokens(app?.usage?.cache_creation_input_tokens)} tok ·{" "}
+              {formatUsd(appCost.cache_write_usd)}
+            </li>
+            {appCost.ahorro_cache_usd > 0 && (
+              <li>Ahorro por cache · {formatUsd(appCost.ahorro_cache_usd)}</li>
+            )}
+          </ul>
+        </article>
+
+        <article className="usage-card">
+          <p className="usage-label">Sesión actual</p>
+          <p className="usage-kpi">{sessionId ? formatUsd(sessionTotal) : "Sin sesión"}</p>
+          <ul>
+            <li>{sessionId ? `ID ${sessionId}` : "Todavía no hay chat activo"}</li>
+            <li>{sesion?.consultas ?? 0} eventos en esta sesión</li>
+            <li>
+              Input {formatTokens(sesion?.usage?.input_tokens)} tok · {formatUsd(sessionCost.input_usd)}
+            </li>
+            <li>
+              Output {formatTokens(sesion?.usage?.output_tokens)} tok ·{" "}
+              {formatUsd(sessionCost.output_usd)}
+            </li>
+            <li>
+              Cache read {formatTokens(sesion?.usage?.cache_read_input_tokens)} tok ·{" "}
+              {formatUsd(sessionCost.cache_read_usd)}
+            </li>
+          </ul>
+        </article>
+      </div>
+
+      <p className="composer-hint" style={{ marginBottom: "1rem" }}>
+        El prompt cache abarata reutilizar el system prompt: cache read suele costar menos que input nuevo.
+        Tarifas (USD / MTok): input {rates.input_usd_per_mtok} · output {rates.output_usd_per_mtok} ·
+        cache read {rates.cache_read_usd_per_mtok}.
+      </p>
+
+      <div className="usage-tables">
+        <div>
+          <h3>Por sesión</h3>
+          {(usage?.sesiones || []).length === 0 ? (
+            <p className="composer-hint">Todavía no hay consumos registrados.</p>
+          ) : (
+            <table className="usage-table">
+              <thead>
+                <tr>
+                  <th>Sesión</th>
+                  <th>Consultas</th>
+                  <th>Tokens in/out</th>
+                  <th>USD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(usage?.sesiones || []).map((row) => (
+                  <tr key={row.session_id} className={row.session_id === sessionId ? "is-current" : ""}>
+                    <td>{row.session_id}</td>
+                    <td>{row.consultas}</td>
+                    <td>
+                      {formatTokens(row.usage?.input_tokens)} / {formatTokens(row.usage?.output_tokens)}
+                    </td>
+                    <td>{formatUsd(row.total_usd)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div>
+          <h3>Eventos recientes</h3>
+          {(usage?.eventos_recientes || []).length === 0 ? (
+            <p className="composer-hint">Sin eventos todavía.</p>
+          ) : (
+                <table className="usage-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Consulta</th>
+                  <th>In / Out / Cache</th>
+                  <th>USD</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(usage?.eventos_recientes || []).map((ev) => (
+                  <tr key={ev.id}>
+                    <td>{ev.kind}</td>
+                    <td title={ev.label}>{ev.label.length > 48 ? `${ev.label.slice(0, 48)}…` : ev.label}</td>
+                    <td>
+                      {formatTokens(ev.usage?.input_tokens)} / {formatTokens(ev.usage?.output_tokens)} /{" "}
+                      {formatTokens(ev.usage?.cache_read_input_tokens)}
+                    </td>
+                    <td>{formatUsd(ev.costo?.total_usd)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function App() {
+  const [screen, setScreen] = useState<Screen>("analisis");
   const [mode, setMode] = useState<Mode>("consulta");
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [usageLoading, setUsageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [respuesta, setRespuesta] = useState<PublicRespuesta | null>(null);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [turns, setTurns] = useState<LocalTurn[]>([]);
   const [ready, setReady] = useState<ReadyStatus | null>(null);
   const [presets, setPresets] = useState<Awaited<ReturnType<typeof getPresets>> | null>(null);
+  const [usage, setUsage] = useState<UsageSummary | null>(null);
   const [job, setJob] = useState<JobStatus | null>(null);
   const [lastCompleted, setLastCompleted] = useState<{ mode: Mode; text: string } | null>(null);
   const resultRef = useRef<HTMLElement>(null);
   const queryRef = useRef<HTMLTextAreaElement>(null);
   const pendingInformeText = useRef<string | null>(null);
 
+  async function refreshUsage(sid?: string | null) {
+    setUsageLoading(true);
+    try {
+      const remote = await getUsage(sid ?? sessionId);
+      setUsage((prev) => {
+        // Si el servidor aún no tiene eventos pero el cliente sí, conservamos lo local.
+        if (
+          prev
+          && (remote.app?.consultas || 0) === 0
+          && (prev.app?.consultas || 0) > 0
+        ) {
+          return prev;
+        }
+        return remote;
+      });
+    } catch {
+      /* demo: si falla, no bloqueamos el análisis; queda el acumulado local */
+    } finally {
+      setUsageLoading(false);
+    }
+  }
+
   useEffect(() => {
     void getReady().then(setReady).catch(() => setReady({ agent: false, db: false, anthropic_key: false }));
     void getPresets().then(setPresets).catch(() => undefined);
+    void refreshUsage(null);
   }, []);
+
+  useEffect(() => {
+    if (screen === "consumos") {
+      void refreshUsage(sessionId);
+    }
+  }, [screen, sessionId]);
 
   const jobPending = Boolean(job && job.status !== "done" && job.status !== "error");
   const busy = loading || jobPending;
@@ -183,13 +563,24 @@ export default function App() {
 
   useEffect(() => {
     if (job?.status === "done" && job.result && pendingInformeText.current) {
-      setLastCompleted({ mode: "informe", text: pendingInformeText.current });
+      const label = pendingInformeText.current;
+      setLastCompleted({ mode: "informe", text: label });
       pendingInformeText.current = null;
+      setUsage((prev) =>
+        absorbLocalEvent(prev, {
+          kind: "informe",
+          label,
+          sessionId,
+          totalUsd: job.result?.costo?.total_usd,
+          tiempoS: job.result?.costo?.tiempo_s,
+        }),
+      );
+      void refreshUsage(sessionId);
     }
     if (job?.status === "error") {
       pendingInformeText.current = null;
     }
-  }, [job?.status, job?.result]);
+  }, [job?.status, job?.result, sessionId]);
 
   function resetOutput() {
     setError(null);
@@ -241,15 +632,35 @@ export default function App() {
       setLastCompleted({ mode: "consulta", text });
       setInput("");
       const index = result.turno_index ?? turns.length;
+      const isBlocked = Boolean(result.meta?.scope_blocked)
+        || Boolean(result.texto?.startsWith("Lo siento, no cuento"));
+      const isMulti = Boolean(result.meta?.multi_question)
+        || Boolean(result.texto?.startsWith("Detecté varias preguntas"));
+      const turnLabel = isMulti
+        ? "Varias preguntas (pedir una)"
+        : text.length > 140
+          ? `${text.slice(0, 137)}…`
+          : text;
       setTurns((prev) => [
         ...prev,
         {
           index,
-          usuario: text,
+          usuario: turnLabel,
           respuesta: result,
-          selected: true,
+          selected: !isBlocked && !isMulti,
         },
       ]);
+      setUsage((prev) =>
+        absorbLocalEvent(prev, {
+          kind: isBlocked ? "chat_blocked" : isMulti ? "chat_clarify" : "chat",
+          label: turnLabel,
+          sessionId: sid,
+          usage: result.meta?.usage,
+          totalUsd: result.meta?.costo_usd,
+          tiempoS: result.meta?.tiempo_s,
+        }),
+      );
+      void refreshUsage(sid);
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
@@ -351,12 +762,29 @@ export default function App() {
               <p>Explorá con preguntas, acumulá evidencia y cerrá con un informe ejecutivo de esa misma sesión.</p>
             </div>
           </div>
-          <span className="trust-badge">Datos de prueba · solo lectura</span>
+          <div className="hero-actions">
+            <button
+              type="button"
+              className={`nav-chip ${screen === "consumos" ? "active" : ""}`}
+              onClick={() => setScreen(screen === "consumos" ? "analisis" : "consumos")}
+            >
+              {screen === "consumos" ? "Volver al análisis" : "Ver consumos"}
+            </button>
+            <span className="trust-badge">Datos de prueba · solo lectura</span>
+          </div>
         </div>
       </header>
 
       <main className="main">
         <ReadyBanner data={ready} />
+        {screen === "consumos" ? (
+          <ConsumosView
+            usage={usage}
+            sessionId={sessionId}
+            loading={usageLoading}
+            onRefresh={() => void refreshUsage(sessionId)}
+          />
+        ) : (
         <div className="shell">
           <section className="panel" aria-labelledby="query-title">
             <p className="panel-kicker">Sesión de análisis</p>
@@ -554,8 +982,26 @@ export default function App() {
             {error && <div className="error" role="alert"><strong>No pudimos completar el análisis.</strong><br />{error}</div>}
             {!busy && respuesta && (
               <>
-                <span className={`status ${respuesta.valor == null ? "warn" : "ok"}`}>
-                  {respuesta.valor == null ? "Respuesta responsable" : "Respuesta trazable"}
+                <span
+                  className={`status ${
+                    respuesta.meta?.scope_blocked
+                    || respuesta.texto?.startsWith("Lo siento, no cuento")
+                    || respuesta.meta?.multi_question
+                    || respuesta.texto?.startsWith("Detecté varias preguntas")
+                    || respuesta.valor == null
+                      ? "warn"
+                      : "ok"
+                  }`}
+                >
+                  {respuesta.meta?.scope_blocked
+                  || respuesta.texto?.startsWith("Lo siento, no cuento")
+                    ? "Fuera de alcance"
+                    : respuesta.meta?.multi_question
+                      || respuesta.texto?.startsWith("Detecté varias preguntas")
+                      ? "Elegí una pregunta"
+                      : respuesta.valor == null
+                        ? "Respuesta responsable"
+                        : "Respuesta trazable"}
                 </span>
                 {respuesta.valor != null && <p className="kpi">{formatValue(respuesta.valor, respuesta.unidad)}</p>}
                 <p className="texto">
@@ -568,6 +1014,11 @@ export default function App() {
                 <div className="meta-row">
                   {respuesta.meta?.tiempo_s != null && <span>{respuesta.meta.tiempo_s} s</span>}
                   {respuesta.meta?.costo_usd != null && <span>~ USD {respuesta.meta.costo_usd}</span>}
+                  {(respuesta.meta?.usage?.cache_read_input_tokens || 0) > 0 && (
+                    <span>
+                      cache {formatTokens(respuesta.meta?.usage?.cache_read_input_tokens)} tok
+                    </span>
+                  )}
                   {respuesta.session_id && <span>Sesión {respuesta.session_id}</span>}
                 </div>
                 {respuesta.alerta_desvio?.activa && <div className="alerta">{respuesta.alerta_desvio.motivo}</div>}
@@ -674,6 +1125,7 @@ export default function App() {
             )}
           </section>
         </div>
+        )}
       </main>
 
       <footer>

@@ -15199,46 +15199,68 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         </div>
         <button class="ma-close" type="button" aria-label="Cerrar Diapo_1">×</button>
       </header>
-      <div class="slide-visual-canvas" role="img" aria-label="Diagrama del problema: negocio necesita respuestas rápidas pero los datos son difíciles de consultar y sin trazabilidad">
-        <svg viewBox="0 0 920 420" xmlns="http://www.w3.org/2000/svg">
+      <div class="slide-visual-canvas" role="img" aria-label="Contexto de Almacenes del Sur y diagrama del problema: cadena de supermercados con datos comerciales difíciles de consultar y sin trazabilidad">
+        <svg viewBox="0 0 920 500" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="diapo-arrow-warn" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" fill="#f87171"/>
             </marker>
           </defs>
-          <!-- Negocio -->
-          <rect x="40" y="120" width="200" height="120" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
-          <text x="140" y="168" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="18" font-weight="700">Negocio</text>
-          <text x="140" y="196" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">¿Cuánto vendimos?</text>
-          <text x="140" y="216" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">¿Y el margen?</text>
 
-          <!-- Flecha rota / fricción -->
-          <path d="M260 180 H360" stroke="#f87171" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#diapo-arrow-warn)"/>
-          <text x="310" y="160" text-anchor="middle" fill="#fca5a5" font-family="system-ui,sans-serif" font-size="12" font-weight="700">fricción</text>
+          <!-- Contexto del negocio ficticio -->
+          <rect x="28" y="18" width="864" height="118" rx="16" fill="#0c1a2e" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="48" y="48" fill="#7dd3fc" font-family="system-ui,sans-serif" font-size="12" font-weight="700" letter-spacing="0.06em">CASO DEMO · ESCENARIO</text>
+          <text x="48" y="78" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="22" font-weight="800">Almacenes del Sur</text>
+          <text x="48" y="104" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">Cadena ficticia de supermercados · 40 sucursales · AF desde el 1 de mayo</text>
 
-          <!-- Equipo de datos saturado -->
-          <rect x="380" y="90" width="220" height="180" rx="16" fill="#1a1520" stroke="#fb7185" stroke-width="2"/>
-          <text x="490" y="130" text-anchor="middle" fill="#fecdd3" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Equipo de datos</text>
-          <text x="490" y="160" text-anchor="middle" fill="#fda4af" font-family="system-ui,sans-serif" font-size="13">consultas repetitivas</text>
-          <text x="490" y="184" text-anchor="middle" fill="#fda4af" font-family="system-ui,sans-serif" font-size="13">tablas · filtros · esperas</text>
-          <text x="490" y="220" text-anchor="middle" fill="#fb7185" font-family="system-ui,sans-serif" font-size="28" font-weight="800">⏱</text>
-          <text x="490" y="248" text-anchor="middle" fill="#fda4af" font-family="system-ui,sans-serif" font-size="13">decisiones demoradas</text>
+          <rect x="520" y="36" width="110" height="34" rx="10" fill="#122033" stroke="#334155"/>
+          <text x="575" y="58" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">4 regiones</text>
+          <rect x="640" y="36" width="118" height="34" rx="10" fill="#122033" stroke="#334155"/>
+          <text x="699" y="58" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">3 formatos</text>
+          <rect x="768" y="36" width="106" height="34" rx="10" fill="#122033" stroke="#334155"/>
+          <text x="821" y="58" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">6 categorías</text>
 
-          <path d="M620 180 H710" stroke="#f87171" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#diapo-arrow-warn)"/>
+          <rect x="520" y="80" width="164" height="34" rx="10" fill="#122033" stroke="#334155"/>
+          <text x="602" y="102" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">marca propia Del Sur</text>
+          <rect x="694" y="80" width="180" height="34" rx="10" fill="#122033" stroke="#334155"/>
+          <text x="784" y="102" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="12" font-weight="600">ventas · stock · presupuesto</text>
 
-          <!-- Cifra sin origen -->
-          <rect x="720" y="120" width="160" height="120" rx="16" fill="#211816" stroke="#f59e0b" stroke-width="2"/>
-          <text x="800" y="168" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="28" font-weight="800">$ ?</text>
-          <text x="800" y="200" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="13">sin origen</text>
-          <text x="800" y="220" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="13">sin confianza</text>
+          <!-- Flujo del dolor -->
+          <rect x="40" y="170" width="210" height="130" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
+          <text x="145" y="208" text-anchor="middle" fill="#7dd3fc" font-family="system-ui,sans-serif" font-size="11" font-weight="700">RESPONSABLE COMERCIAL</text>
+          <text x="145" y="236" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Almacenes del Sur</text>
+          <text x="145" y="262" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">¿Cuánto vendimos?</text>
+          <text x="145" y="282" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="13">¿Y el margen / desvío?</text>
+
+          <path d="M270 235 H360" stroke="#f87171" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#diapo-arrow-warn)"/>
+          <text x="315" y="220" text-anchor="middle" fill="#fca5a5" font-family="system-ui,sans-serif" font-size="12" font-weight="700">fricción</text>
+
+          <rect x="380" y="160" width="220" height="150" rx="16" fill="#1a1520" stroke="#fb7185" stroke-width="2"/>
+          <text x="490" y="198" text-anchor="middle" fill="#fecdd3" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Equipo de datos</text>
+          <text x="490" y="226" text-anchor="middle" fill="#fda4af" font-family="system-ui,sans-serif" font-size="13">año fiscal · tablas · filtros</text>
+          <text x="490" y="248" text-anchor="middle" fill="#fda4af" font-family="system-ui,sans-serif" font-size="13">debe armar cada consulta</text>
+          <text x="490" y="280" text-anchor="middle" fill="#fb7185" font-family="system-ui,sans-serif" font-size="22" font-weight="800">⏱</text>
+
+          <path d="M620 235 H710" stroke="#f87171" stroke-width="3" stroke-dasharray="8 7" marker-end="url(#diapo-arrow-warn)"/>
+
+          <rect x="720" y="170" width="160" height="130" rx="16" fill="#211816" stroke="#f59e0b" stroke-width="2"/>
+          <text x="800" y="208" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="15" font-weight="800">Cifra opaca</text>
+          <text x="800" y="234" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="12">número sin evidencia</text>
+          <text x="800" y="256" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="12">sin medida ni SQL</text>
+          <text x="800" y="278" text-anchor="middle" fill="#fbbf24" font-family="system-ui,sans-serif" font-size="12" font-weight="700">no se puede auditar</text>
 
           <!-- Tres dolores -->
-          <rect x="40" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="170" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">1. Decisiones lentas</text>
-          <rect x="330" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="460" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">2. Equipo saturado</text>
-          <rect x="620" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="750" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">3. Cifra sin trazabilidad</text>
+          <rect x="40" y="340" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="170" y="368" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">1. Decisiones lentas</text>
+          <text x="170" y="390" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="11">armar consulta + mirada técnica</text>
+          <rect x="330" y="340" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="460" y="368" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">2. Equipo de datos</text>
+          <text x="460" y="390" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="11">consultas repetitivas a ejecutar</text>
+          <rect x="620" y="340" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="750" y="368" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">3. Cifra sin traza</text>
+          <text x="750" y="390" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="11">sin origen → no se actúa</text>
+
+          <text x="460" y="440" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Necesitan respuesta rápida, comprensible y verificable —en el día a día de la cadena.</text>
         </svg>
       </div>
     </section>
@@ -15254,43 +15276,54 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <button class="ma-close" type="button" aria-label="Cerrar Diapo_2">×</button>
       </header>
       <div class="slide-visual-canvas" role="img" aria-label="Diagrama de la solución TaliAnalytics: pregunta en lenguaje natural, evidencia trazable e informe">
-        <svg viewBox="0 0 920 420" xmlns="http://www.w3.org/2000/svg">
+        <svg viewBox="0 0 920 460" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="diapo-arrow-ok" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
               <path d="M0 0 L10 5 L0 10 z" fill="#34d399"/>
             </marker>
           </defs>
-          <!-- Pregunta -->
-          <rect x="36" y="150" width="170" height="100" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
-          <text x="121" y="192" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Pregunta</text>
-          <text x="121" y="218" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="12">lenguaje natural</text>
 
-          <path d="M216 200 H270" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
+          <text x="460" y="36" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="14" font-weight="700">Trazabilidad = cada cifra con medida, filtros y consulta/cuenta</text>
+          <text x="460" y="58" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Sobre datos de Almacenes del Sur · solo lectura</text>
+
+          <!-- Pregunta -->
+          <rect x="36" y="100" width="170" height="100" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
+          <text x="121" y="142" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Pregunta</text>
+          <text x="121" y="168" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="12">lenguaje natural</text>
+
+          <path d="M216 150 H270" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
 
           <!-- TaliAnalytics -->
-          <rect x="280" y="120" width="230" height="160" rx="18" fill="#10261f" stroke="#34d399" stroke-width="2.5"/>
-          <text x="395" y="168" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="18" font-weight="800">TaliAnalytics</text>
-          <text x="395" y="196" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="13">analista de negocio</text>
-          <text x="395" y="226" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="12">medida · filtros · SQL</text>
-          <text x="395" y="248" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="12">sesión · informe PDF</text>
+          <rect x="280" y="70" width="230" height="160" rx="18" fill="#10261f" stroke="#34d399" stroke-width="2.5"/>
+          <text x="395" y="118" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="18" font-weight="800">TaliAnalytics</text>
+          <text x="395" y="146" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="13">analista de negocio</text>
+          <text x="395" y="176" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="12">medida · filtros · SQL</text>
+          <text x="395" y="198" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="12">sesión · informe PDF</text>
 
-          <path d="M520 170 H575" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
-          <path d="M520 230 H575" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
+          <path d="M520 120 H575" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
+          <path d="M520 180 H575" stroke="#34d399" stroke-width="3" marker-end="url(#diapo-arrow-ok)"/>
 
           <!-- Salidas -->
-          <rect x="590" y="100" width="290" height="70" rx="14" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
-          <text x="735" y="142" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Respuesta trazable</text>
+          <rect x="590" y="70" width="290" height="70" rx="14" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
+          <text x="735" y="100" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Respuesta trazable</text>
+          <text x="735" y="122" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="12">valor + evidencia SQL</text>
 
-          <rect x="590" y="190" width="290" height="70" rx="14" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
-          <text x="735" y="232" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Informe ejecutivo PDF</text>
+          <rect x="590" y="160" width="290" height="70" rx="14" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
+          <text x="735" y="190" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="15" font-weight="700">Informe ejecutivo PDF</text>
+          <text x="735" y="212" text-anchor="middle" fill="#93c5fd" font-family="system-ui,sans-serif" font-size="12">KPIs · limitaciones · anexo</text>
 
           <!-- Tres promesas -->
-          <rect x="40" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="170" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">Respuestas con evidencia</text>
-          <rect x="330" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="460" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">Conversación con contexto</text>
-          <rect x="620" y="330" width="260" height="54" rx="12" fill="#111827" stroke="#334155"/>
-          <text x="750" y="363" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="14" font-weight="600">Informes bajo demanda</text>
+          <rect x="40" y="280" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="170" y="308" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">Respuesta trazable</text>
+          <text x="170" y="330" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">valor + evidencia SQL</text>
+          <rect x="330" y="280" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="460" y="308" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">Sesión con contexto</text>
+          <text x="460" y="330" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">hereda período / filtros</text>
+          <rect x="620" y="280" width="260" height="70" rx="12" fill="#111827" stroke="#334155"/>
+          <text x="750" y="308" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="13" font-weight="700">Informe PDF BI</text>
+          <text x="750" y="330" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">KPIs, limitaciones y anexo</text>
+
+          <text x="460" y="390" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Preguntar en lenguaje natural. Decidir con evidencia.</text>
         </svg>
       </div>
     </section>
@@ -15306,41 +15339,43 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
         <button class="ma-close" type="button" aria-label="Cerrar Diapo_6">×</button>
       </header>
       <div class="slide-visual-canvas" role="img" aria-label="Tablero de evidencia: 20 de 20 preguntas, 5 de 5 conversaciones, 3 de 3 informes, holdout 5 de 5, 415 segundos y 2,33 dólares">
-        <svg viewBox="0 0 920 420" xmlns="http://www.w3.org/2000/svg">
-          <text x="460" y="48" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Probado de punta a punta</text>
-          <text x="460" y="72" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Harness propio · acierto de respuesta + acierto de consulta</text>
+        <svg viewBox="0 0 920 440" xmlns="http://www.w3.org/2000/svg">
+          <text x="460" y="36" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Probado de punta a punta</text>
+          <text x="460" y="58" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">Harness: valida valor + medida + consulta</text>
+          <text x="460" y="78" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Holdout: 5 preguntas apartadas desde el día 1, sin retunear</text>
 
           <!-- Scorecards fila 1 -->
-          <rect x="40" y="100" width="200" height="120" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
-          <text x="140" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="36" font-weight="800">20/20</text>
-          <text x="140" y="184" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">preguntas</text>
+          <rect x="40" y="100" width="200" height="110" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
+          <text x="140" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="34" font-weight="800">20/20</text>
+          <text x="140" y="180" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">preguntas</text>
 
-          <rect x="260" y="100" width="200" height="120" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
-          <text x="360" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="36" font-weight="800">5/5</text>
-          <text x="360" y="184" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">conversaciones</text>
+          <rect x="260" y="100" width="200" height="110" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
+          <text x="360" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="34" font-weight="800">5/5</text>
+          <text x="360" y="180" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">conversaciones</text>
 
-          <rect x="480" y="100" width="200" height="120" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
-          <text x="580" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="36" font-weight="800">3/3</text>
-          <text x="580" y="184" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">informes</text>
+          <rect x="480" y="100" width="200" height="110" rx="16" fill="#10261f" stroke="#34d399" stroke-width="2"/>
+          <text x="580" y="148" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="34" font-weight="800">3/3</text>
+          <text x="580" y="180" text-anchor="middle" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14" font-weight="600">informes</text>
 
-          <rect x="700" y="100" width="180" height="120" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
-          <text x="790" y="148" text-anchor="middle" fill="#7dd3fc" font-family="system-ui,sans-serif" font-size="36" font-weight="800">5/5</text>
-          <text x="790" y="184" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="14" font-weight="600">holdout</text>
+          <rect x="700" y="100" width="180" height="110" rx="16" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
+          <text x="790" y="148" text-anchor="middle" fill="#7dd3fc" font-family="system-ui,sans-serif" font-size="34" font-weight="800">5/5</text>
+          <text x="790" y="180" text-anchor="middle" fill="#e0f2fe" font-family="system-ui,sans-serif" font-size="14" font-weight="600">holdout</text>
 
           <!-- Fila 2: tiempo / costo / honestidad -->
-          <rect x="40" y="250" width="280" height="100" rx="16" fill="#111827" stroke="#334155"/>
-          <text x="180" y="290" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">tiempo de corrida</text>
-          <text x="180" y="324" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="28" font-weight="800">415 s</text>
+          <rect x="40" y="240" width="280" height="100" rx="16" fill="#111827" stroke="#334155"/>
+          <text x="180" y="280" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">tiempo de corrida</text>
+          <text x="180" y="314" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="28" font-weight="800">415 s</text>
 
-          <rect x="340" y="250" width="280" height="100" rx="16" fill="#111827" stroke="#334155"/>
-          <text x="480" y="290" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">costo estimado</text>
-          <text x="480" y="324" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="28" font-weight="800">USD 2,33</text>
+          <rect x="340" y="240" width="280" height="100" rx="16" fill="#111827" stroke="#334155"/>
+          <text x="480" y="280" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">costo estimado</text>
+          <text x="480" y="314" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="28" font-weight="800">USD 2,33</text>
 
-          <rect x="640" y="250" width="240" height="100" rx="16" fill="#1a1520" stroke="#f59e0b" stroke-width="1.5"/>
-          <text x="760" y="290" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="13">honestidad</text>
-          <text x="760" y="318" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="14" font-weight="700">P09: respuesta OK</text>
-          <text x="760" y="338" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="12">traza medida observada</text>
+          <rect x="640" y="240" width="240" height="100" rx="16" fill="#1a1520" stroke="#f59e0b" stroke-width="1.5"/>
+          <text x="760" y="278" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="13">P09 · número OK</text>
+          <text x="760" y="304" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="12" font-weight="600">observación en cómo</text>
+          <text x="760" y="322" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="12" font-weight="600">se declaró la traza</text>
 
+          <text x="460" y="380" text-anchor="middle" fill="#64748b" font-family="system-ui,sans-serif" font-size="12">Corrida concreta y reproducible · no es un SLA de producción</text>
         </svg>
       </div>
     </section>
@@ -15360,15 +15395,15 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <!-- Hoy -->
           <rect x="40" y="70" width="400" height="280" rx="20" fill="#10261f" stroke="#34d399" stroke-width="2.5"/>
           <text x="240" y="112" text-anchor="middle" fill="#6ee7b7" font-family="system-ui,sans-serif" font-size="22" font-weight="800">Hoy</text>
-          <text x="240" y="138" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="13">MVP interno demo</text>
+          <text x="240" y="138" text-anchor="middle" fill="#a7f3d0" font-family="system-ui,sans-serif" font-size="13">MVP interno demoable</text>
           <circle cx="90" cy="180" r="7" fill="#34d399"/>
-          <text x="110" y="186" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="15">Lenguaje natural</text>
+          <text x="110" y="186" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14">Lenguaje natural sobre la cadena</text>
           <circle cx="90" cy="220" r="7" fill="#34d399"/>
-          <text x="110" y="226" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="15">Respuestas e informes trazables</text>
+          <text x="110" y="226" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14">Traza en respuesta e informe</text>
           <circle cx="90" cy="260" r="7" fill="#34d399"/>
-          <text x="110" y="266" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="15">Contexto conversacional</text>
+          <text x="110" y="266" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14">Sesión con contexto</text>
           <circle cx="90" cy="300" r="7" fill="#34d399"/>
-          <text x="110" y="306" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="15">Guardrails · budgets · evaluación</text>
+          <text x="110" y="306" fill="#ecfdf5" font-family="system-ui,sans-serif" font-size="14">Solo lectura · budgets · evaluación</text>
 
           <!-- Flecha -->
           <path d="M460 210 H480" stroke="#a78bfa" stroke-width="4" stroke-linecap="round"/>
@@ -15379,13 +15414,13 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
           <text x="690" y="112" text-anchor="middle" fill="#c4b5fd" font-family="system-ui,sans-serif" font-size="22" font-weight="800">Próxima evolución</text>
           <text x="690" y="138" text-anchor="middle" fill="#ddd6fe" font-family="system-ui,sans-serif" font-size="13">camino a multiusuario</text>
           <circle cx="540" cy="180" r="7" fill="#a78bfa"/>
-          <text x="560" y="186" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="15">Persistencia de sesiones</text>
+          <text x="560" y="186" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="14">Persistencia de sesiones</text>
           <circle cx="540" cy="220" r="7" fill="#a78bfa"/>
-          <text x="560" y="226" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="15">Identidad y auth por usuario</text>
+          <text x="560" y="226" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="14">Auth por usuario</text>
           <circle cx="540" cy="260" r="7" fill="#a78bfa"/>
-          <text x="560" y="266" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="15">Observabilidad y feedback</text>
+          <text x="560" y="266" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="14">Observabilidad / feedback</text>
           <circle cx="540" cy="300" r="7" fill="#a78bfa"/>
-          <text x="560" y="306" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="15">Trazas 100% reejecutables</text>
+          <text x="560" y="306" fill="#ede9fe" font-family="system-ui,sans-serif" font-size="14">SQL del anexo para reejecutar</text>
 
           <text x="460" y="390" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="13">No reemplaza el gobierno de datos: lo acerca al momento de decisión</text>
         </svg>
@@ -15410,8 +15445,9 @@ OTHER DEALINGS IN THE FONT SOFTWARE.
             </marker>
           </defs>
 
-          <text x="460" y="78" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="34" font-weight="800">TaliAnalytics</text>
-          <text x="460" y="118" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="20" font-weight="600">Preguntar en lenguaje natural. Decidir con evidencia.</text>
+          <text x="460" y="70" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="34" font-weight="800">TaliAnalytics</text>
+          <text x="460" y="108" text-anchor="middle" fill="#fde68a" font-family="system-ui,sans-serif" font-size="20" font-weight="600">Preguntar en lenguaje natural. Decidir con evidencia.</text>
+          <text x="460" y="136" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="14">Velocidad para el negocio · control para datos</text>
 
           <!-- Cadena -->
           <rect x="90" y="170" width="180" height="70" rx="14" fill="#122033" stroke="#38bdf8" stroke-width="2"/>
